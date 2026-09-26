@@ -1,0 +1,32 @@
+# Opportuni (repo Accesly/opportuni)
+
+Web de Opportuni en Next.js 14 (App Router), Supabase y Vercel. Comunidad de más de 12 mil jóvenes en México y Colombia.
+
+## Feature en curso: Pasaporte Opportuni (sep 2026)
+
+**Fuente de verdad: [docs/prd-pasaporte-opportuni.md](docs/prd-pasaporte-opportuni.md).** Leerlo antes de tocar código. También en Notion: "PRD · Pasaporte Opportuni v1".
+
+Resumen: historial laboral verificado en Stellar mainnet. El joven crea una smart account con passkey (`smart-account-kit`) al postularse, da un permiso limitado a Opportuni (context rule con signer delegado) y Opportuni emite credenciales `postulacion` y `cv_verificado` en un contrato de registro en Soroban. Fees con OpenZeppelin Channels y RPC gratuita. Sin AWS.
+
+Decisiones ya tomadas (no reabrir):
+- **Base: rama `sinlogin`**, que ya retiró `@accesly/*`, la wallet y los pagos on-chain (dependían del backend en AWS, que ya no se paga). `main` es el commit inicial de febrero: no usarla.
+- `/admin` está apagado en `sinlogin` (flag `ADMIN_API_ENABLED`, rutas en 503). Reactivarlo solo con contraseña en env (`ADMIN_PASSWORD`). Los componentes del admin viejo están en el commit `c13f935`.
+- `@stellar/stellar-sdk` 16.3.x, **no 17**.
+- La postulación nunca depende de la passkey: si falla, el registro en `postulantes` ya quedó.
+- En cadena solo hash con salt. Nada de nombre, WhatsApp, empresa ni puesto.
+- `rpId` fijo `opportuni.xyz`; nunca probar passkeys desde `*.vercel.app`.
+- El contrato de registro vive en `Accesly/SmartContracts`, `contracts/credential-registry`.
+
+Gates del fin de semana (26 y 27 sep): sábado 13:00 cuenta con passkey en mainnet desde iPhone, o plan B de cuentas patrocinadas; sábado 19:00 emisión con permiso delegado, o plan B de Face ID por credencial.
+
+## Git
+
+- Commits como el usuario **Accesly** (identidad configurada solo en este repo).
+- Trabajar en `feature/pasaporte-stellar` (sale de `sinlogin`), nunca directo en `main` ni en `sinlogin`.
+- Deploy: Vercel de la cuenta Accesly, dominio `opportuni.xyz`.
+
+## Copy
+
+- Español, voz cercana de Opportuni, sin guiones largos.
+- Comunidad: "más de 12 mil jóvenes", nunca 10 mil.
+- Marca: rosa `#e3216d`, naranja `#f89b0e`, lila `#7c5cfc`, teal `#0ec4a9`, cream `#fdf6ee`, dark `#1a1a2e`; Gabarito (títulos), Bricolage Grotesque (texto), Playfair Display itálica (énfasis). Clases existentes: `bento`, `btn-rosa`, `input-bento`.
