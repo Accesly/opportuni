@@ -9,8 +9,8 @@ Web de Opportuni en Next.js 14 (App Router), Supabase y Vercel. Comunidad de má
 Resumen: historial laboral verificado en Stellar mainnet. El joven crea una smart account con passkey (`smart-account-kit`) al postularse, da un permiso limitado a Opportuni (context rule con signer delegado) y Opportuni emite credenciales `postulacion` y `cv_verificado` en un contrato de registro en Soroban. Fees con OpenZeppelin Channels y RPC gratuita. Sin AWS.
 
 Decisiones ya tomadas (no reabrir):
-- **Base: rama `sinlogin`**, que ya retiró `@accesly/*`, la wallet y los pagos on-chain (dependían del backend en AWS, que ya no se paga). `main` es el commit inicial de febrero: no usarla.
-- `/admin` está apagado en `sinlogin` (flag `ADMIN_API_ENABLED`, rutas en 503). Reactivarlo solo con contraseña en env (`ADMIN_PASSWORD`). Los componentes del admin viejo están en el commit `c13f935`.
+- **`main` es la base** (26 sep se movió al commit de `sinlogin` del 30 ago, que ya retiró `@accesly/*`, la wallet y los pagos on-chain; dependían del backend en AWS, que ya no se paga). El `main` viejo de febrero quedó como `main-feb-2026`, solo de respaldo.
+- `/admin` está apagado en `main` (flag `ADMIN_API_ENABLED`, rutas en 503). Reactivarlo solo con contraseña en env (`ADMIN_PASSWORD`). Los componentes del admin viejo están en el commit `c13f935`.
 - `@stellar/stellar-sdk` 16.3.x, **no 17**.
 - La postulación nunca depende de la passkey: si falla, el registro en `postulantes` ya quedó.
 - En cadena solo hash con salt. Nada de nombre, WhatsApp, empresa ni puesto.
@@ -22,8 +22,8 @@ Gates del fin de semana (26 y 27 sep): sábado 13:00 cuenta con passkey en mainn
 ## Git
 
 - Commits como el usuario **Accesly** (identidad configurada solo en este repo).
-- Trabajar en `feature/pasaporte-stellar` (sale de `sinlogin`), nunca directo en `main` ni en `sinlogin`.
-- Deploy: Vercel de la cuenta Accesly, dominio `opportuni.xyz`.
+- Trabajar en `feature/pasaporte-stellar` (sale de `main`) y fusionar por PR. Nunca commits directos a `main`.
+- Deploy: Vercel de la cuenta Accesly, rama de producción `main`, dominio `opportuni.xyz`.
 
 ## Copy
 

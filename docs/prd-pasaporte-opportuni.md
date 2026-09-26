@@ -123,24 +123,24 @@ Un historial laboral verificado en Stellar mainnet: cada vez que Opportuni hace 
 
 ## 8. Diseño técnico
 
-### 8.1 Qué se reusa del repo (`Accesly/opportuni`, base: rama `sinlogin`)
+### 8.1 Qué se reusa del repo (`Accesly/opportuni`, base: `main`)
 
-La rama `sinlogin` (30 ago, commit `8639887`) ya retiró el SDK de Accesly, la wallet, los pagos on-chain y `@stellar/stellar-sdk`; dejó públicas home, /chat, /convocatorias y /cv/asesoria, y **apagó /admin**: la página muestra un aviso y `/api/admin/*` responde 503 detrás del flag `ADMIN_API_ENABLED` en `app/lib/submissions.ts`. La feature se construye encima de esa rama.
+Desde el 26 sep `main` apunta al commit `8639887` (antes rama `sinlogin`, 30 ago), que ya retiró el SDK de Accesly, la wallet, los pagos on-chain y `@stellar/stellar-sdk`; dejó públicas home, /chat, /convocatorias y /cv/asesoria, y **apagó /admin**: la página muestra un aviso y `/api/admin/*` responde 503 detrás del flag `ADMIN_API_ENABLED` en `app/lib/submissions.ts`. La feature se construye encima de `main`.
 
 | Pieza existente | Cómo se usa |
 |---|---|
 | `app/postular/[id]/page.tsx` + `app/api/postular/route.ts` | Se conserva tal cual. Solo se extiende la pantalla `done` con el paso del pasaporte y el API devuelve el `id` del postulante |
 | `app/lib/supabase.ts` (`sbSelect`, `sbInsert`, `sbRpc`) | Base para las tablas nuevas. Agregar un cliente con **service role** solo en servidor para emitir |
 | `app/v/[id]/route.ts` y `vacante_clicks` | Sin cambios. El link corto sigue contando clicks |
-| `app/admin/page.tsx` | En `sinlogin` quedó reducido a un aviso. Los componentes (tabs, `SubTable`, modales, `CopyLinks`) se recuperan del historial, commit `c13f935` de `Accesly-Opportuni`, y se agrega la pestaña **Pasaportes** |
+| `app/admin/page.tsx` | En `main` quedó reducido a un aviso. Los componentes (tabs, `SubTable`, modales, `CopyLinks`) se recuperan del historial, commit `c13f935` de `Accesly-Opportuni`, y se agrega la pestaña **Pasaportes** |
 | `app/lib/submissions.ts` (Vercel Blob) | Guardar el PDF del CV verificado (privado) junto con su hash |
 | `globals.css` / Tailwind (`bento`, `btn-rosa`, `input-bento`, colores) | Todas las pantallas nuevas con la marca existente |
-| `app/providers.tsx`, `wallet-modal.tsx`, `pay-modal.tsx` | **Ya retirados en `sinlogin`.** Dependían del backend de Accesly en AWS. Los cobros siguen por SPEI |
+| `app/providers.tsx`, `wallet-modal.tsx`, `pay-modal.tsx` | **Ya retirados en `main`.** Dependían del backend de Accesly en AWS. Los cobros siguen por SPEI |
 
 ### 8.2 Dependencias
 
 - `smart-account-kit` (sucesor de passkey-kit). **Aviso del propio proyecto: no auditado.** Riesgo aceptable porque estas cuentas no guardan dinero en v1.
-- `@stellar/stellar-sdk@^16.3.0`, **no 17** (cambia la API de autorización). `sinlogin` lo quitó del `package.json`: volver a agregarlo en esa versión.
+- `@stellar/stellar-sdk@^16.3.0`, **no 17** (cambia la API de autorización). `main` ya no lo tiene en el `package.json`: volver a agregarlo en esa versión.
 - Contratos ya desplegados en mainnet (manifest `docs/deployments-protocol-27-2026-07-09.md` del kit): WebAuthn verifier `CB7HENHJ7NF34I5FFXQK7D5I3WWQRGB5O5XO77D3NXMT7LM7LOKRQ5YR`, WASM de la cuenta `1b5f4534…785a`.
 - Relayer: OpenZeppelin Channels (`channels.openzeppelin.com`, API key en `/gen`).
 
@@ -177,7 +177,7 @@ fn list(env, subject: Address) -> Vec<Credential>;
 
 ### 8.6 Proteger /admin sin Accesly
 
-- v1: contraseña única en `ADMIN_PASSWORD` (env), cookie httpOnly firmada, middleware en `/admin` y `/api/admin/*`. Reemplaza el flag `ADMIN_API_ENABLED` que dejó `sinlogin`. **Nunca** poner ese flag en `true` sin este gate: deja CVs, WhatsApps y postulantes abiertos.
+- v1: contraseña única en `ADMIN_PASSWORD` (env), cookie httpOnly firmada, middleware en `/admin` y `/api/admin/*`. Reemplaza el flag `ADMIN_API_ENABLED`. **Nunca** poner ese flag en `true` sin este gate: deja CVs, WhatsApps y postulantes abiertos.
 - v1.1: login de admin con la misma passkey del kit.
 
 ### 8.7 Datos (Supabase, proyecto `gbdlfmkenfldrjnzxqst`)
@@ -247,7 +247,7 @@ No hay metas numéricas todavía: la primera semana es la línea base. No se com
 
 ## 12. Preguntas abiertas
 
-1. ¿Qué rama está desplegada hoy en opportuni.xyz? Lo más probable es `sinlogin` (30 ago). `main` es el commit inicial de febrero y no sirve de base.
+1. ~~¿Qué rama está desplegada?~~ Resuelto el 26 sep: `main` (= el antiguo `sinlogin`) es la rama de producción en el Vercel de Accesly.
 2. ¿Número de WhatsApp oficial para el botón "Volver a WhatsApp"?
 3. ¿El pasaporte público muestra el nombre completo o nombre y primera letra del apellido? (v1 asume lo segundo.)
 4. ¿La credencial `cv_verificado` se emite también a los clientes de los meses anteriores? Si sí, Vianey necesita sus PDFs finales.
