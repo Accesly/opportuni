@@ -1,12 +1,30 @@
 // Agente de Opportuni: recibe una consulta ("busco prácticas de marketing
-// remotas") y responde con vacantes reales de la tabla `vacantes`.
+// remotas") y responde con las vacantes activas de Opportuni, leídas de su API
+// pública (OPPORTUNI_VACANTES_URL, default https://opportuni.xyz/api/vacantes).
 //
 // Con ANTHROPIC_API_KEY responde Claude con las vacantes en el contexto (el
 // mismo prompt que /api/chat). Sin key, responde por búsqueda de palabras
 // sobre las mismas vacantes y lo dice en `modo`.
 
 import Anthropic from "@anthropic-ai/sdk";
-import { listVacantesActivas, type VacanteRow } from "./supabase";
+
+const VACANTES_URL = process.env.OPPORTUNI_VACANTES_URL ?? "https://opportuni.xyz/api/vacantes";
+
+interface VacanteRow {
+  id: string;
+  titulo: string;
+  empresa: string | null;
+  descripcion: string | null;
+  ubicacion: string | null;
+  tipo: string | null;
+}
+
+async function listVacantesActivas(): Promise<VacanteRow[]> {
+  const res = await fetch(VACANTES_URL, { cache: "no-store", signal: AbortSignal.timeout(8000) });
+  if (!res.ok) throw new Error(`vacantes ${res.status}`);
+  const data = (await res.json()) as { vacantes?: VacanteRow[] };
+  return data.vacantes ?? [];
+}
 
 export interface RespuestaAgente {
   modo: "ia" | "busqueda";
@@ -29,7 +47,7 @@ function aVacante(v: VacanteRow) {
     empresa: v.empresa ?? "",
     ubicacion: v.ubicacion ?? "",
     tipo: v.tipo ?? "remoto",
-    url: `/vacantes/${encodeURIComponent(v.id)}`,
+    url: `https://opportuni.xyz/vacantes/${encodeURIComponent(v.id)}`,
   };
 }
 
